@@ -17,8 +17,11 @@ export class RegistroPage implements OnInit {
   public tipo_usuario : string;
   public email : string;
   public password : string;
+  public terminos : boolean
 
-  constructor(private autorizacion : AutorizacionService, private router : Router,private emailService : EmailComposer) { }
+  constructor(private autorizacion : AutorizacionService, private router : Router,private emailService : EmailComposer) {
+    this.terminos = false;
+   }
 
   ngOnInit() {
   }
@@ -36,28 +39,43 @@ export class RegistroPage implements OnInit {
     {
       alert('Faltan campos por llenar');
     } else{
-      if(this.tipo_usuario === "cliente")
+
+      if(this.terminos)
       {
-        this.autorizacion.register(this.nombre, this.genero_usuario, this.fecha_nacimiento, this.direccion, this.telefono, this.tipo_usuario, this.email, this.password).then( auth => {
-          this.router.navigate(['tabs/tab3']);        
-        }).catch(err => alert('Este correo electronico ya esta registrado'));
-      }
-      else{
-        let correo = {
-          to: "jobyServicios@gmail.com",
-          cc: [],
-          bcc: [],
-          attachment: [],
-          subject: "Solicitud de Trabajo",
-          body: "El senor(a) " + this.nombre + " solicita ser parte de JobyMultiservicios como JobyTrabajador. A continuacion se presenta la informacion:\n\nNomber:" + this.nombre + "\nEmail:" + this.email + "\nTelefono:" + this.telefono + "\nDireccion:" + this.direccion + "\nFecha de nacimiento:" + this.fecha_nacimiento + "\n\nPor favor ingrese sus habilidades o destrezas a continuacion:",
-          isHtml: false
-          //app: "Gmail"
-    
+        if(this.tipo_usuario === "cliente")
+        {
+
+          
+            this.autorizacion.register(this.nombre, this.genero_usuario, this.fecha_nacimiento, this.direccion, this.telefono, this.tipo_usuario, this.email, this.password).then( auth => {
+              //this.router.navigate(['tabs/tab3']);
+              alert('Se creo satisfactoriamente su cuenta');
+              this.autorizacion.logOut();
+              //this.router.navigate(['/login']);        
+            }).catch(err => alert('Este correo electronico ya esta registrado'));
+          
         }
+        else{
+          let correo = {
+            to: "jobyServicios@gmail.com",
+            cc: [],
+            bcc: [],
+            attachment: [],
+            subject: "Solicitud de Trabajo",
+            body: "El senor(a) " + this.nombre + " solicita ser parte de JobyMultiservicios como JobyTrabajador. A continuacion se presenta la informacion:\n\nNomber:" + this.nombre + "\nEmail:" + this.email + "\nTelefono:" + this.telefono + "\nDireccion:" + this.direccion + "\nFecha de nacimiento:" + this.fecha_nacimiento + "\n\nPor favor ingrese sus habilidades o destrezas a continuacion:",
+            isHtml: false
+            //app: "Gmail"
+      
+          }
     
-        this.emailService.open(correo);
-        this.router.navigate(['tabs/tab1']);
+          this.emailService.open(correo);
+          this.router.navigate(['tabs/tab1']);
+        }
+
       }
+      else
+      {
+        alert('Debe Aceptar Terminos y Condiciones');
+      }     
       
     }    
   }
